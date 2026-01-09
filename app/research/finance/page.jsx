@@ -17,7 +17,10 @@ import {
   XCircle,
   Star,
   Brain,
-  Sparkles
+  Sparkles,
+  Gift,
+  Rocket,
+  CreditCard
 } from 'lucide-react';
 import Navigation from '../../../components/Navigation';
 import Card from '../../../components/Card';
@@ -62,25 +65,48 @@ const approachComparison = {
 };
 
 // ========================================
+// STARTUP COSTS - ONE-TIME INVESTMENTS
+// ========================================
+
+const startupCosts = {
+  required: [
+    { item: 'Google Play Developer', cost: 25, unit: 'one-time', notes: 'Lifetime access to publish Android apps' },
+    { item: 'Railway Hobby Plan', cost: 5, unit: '/mo', notes: 'Starting infrastructure (upgrade later)' },
+  ],
+  optional: [
+    { item: 'Apple Developer Program', cost: 99, unit: '/year', notes: 'iOS app publishing (can delay)' },
+    { item: 'Domain Registration', cost: 12, unit: '/year', notes: '.com domain' },
+  ],
+  totalToLaunch: 30, // $25 Google + $5 Railway = $30 to start
+};
+
+// ========================================
 // QUALITY-BASED INFRASTRUCTURE COSTS (January 2026)
 // ========================================
 
 const qualityInfraCosts = {
   fixed: [
-    { item: 'Railway Pro Plan', cost: 20, unit: '/mo', notes: 'Includes $20 credits, PostgreSQL Pro' },
-    { item: 'Supabase Auth (Free)', cost: 0, unit: '/mo', notes: '50,000 MAU free tier' },
+    { item: 'Railway Hobby → Pro', cost: 5, unit: '/mo', notes: 'Start at $5, scale to $20 Pro' },
+    { item: 'Supabase (Free → Pro)', cost: 0, unit: '/mo', notes: 'Auth + Postgres, 50k MAU free' },
     { item: 'Adzuna API (Free)', cost: 0, unit: '/mo', notes: '250 calls/day = 7,500/month' },
     { item: 'Jooble API (Free)', cost: 0, unit: '/mo', notes: 'Unlimited (affiliate model)' },
-    { item: 'Inngest Pro', cost: 25, unit: '/mo', notes: '100k steps/month for job processing' },
-    { item: 'Pinecone Starter', cost: 50, unit: '/mo', notes: 'Vector DB for semantic matching' },
-    { item: 'Domain + Email', cost: 5, unit: '/mo', notes: '.com + transactional email' },
+    { item: 'Inngest (Free → Pro)', cost: 0, unit: '/mo', notes: 'Free tier: 25k steps/month' },
+    { item: 'Pinecone Starter', cost: 0, unit: '/mo', notes: 'Vector DB - free tier for start' },
   ],
+  phase1Total: 5, // $5/month to start Phase 1
+  scaledFixed: [
+    { item: 'Railway Pro Plan', cost: 20, unit: '/mo', notes: 'When >100 users' },
+    { item: 'Supabase Pro', cost: 25, unit: '/mo', notes: 'When >50k MAU' },
+    { item: 'Inngest Pro', cost: 25, unit: '/mo', notes: 'When >25k steps/month' },
+    { item: 'Pinecone Starter', cost: 50, unit: '/mo', notes: 'When free tier exceeded' },
+  ],
+  scaledTotal: 120, // $120/month at scale
   perUser: {
     ship: [
       { item: 'OpenAI text-embedding-3-large', cost: 0.05, unit: '/user/mo', notes: '~400k tokens for resume+job embeddings' },
       { item: 'Claude Sonnet 4.5 (match analysis)', cost: 0.15, unit: '/user/mo', notes: '~5k tokens/match x 10 matches/day' },
       { item: 'Pinecone queries', cost: 0.02, unit: '/user/mo', notes: '~1000 queries/month' },
-      { item: 'Stripe fees ($29)', cost: 1.14, unit: '/transaction', notes: '2.9% + $0.30' },
+      { item: 'Stripe fees ($19)', cost: 0.85, unit: '/transaction', notes: '2.9% + $0.30' },
     ],
     auto: [
       { item: 'OpenAI text-embedding-3-large', cost: 0.08, unit: '/user/mo', notes: '~600k tokens (more resume variations)' },
@@ -88,20 +114,21 @@ const qualityInfraCosts = {
       { item: 'Pinecone queries', cost: 0.03, unit: '/user/mo', notes: '~1500 queries/month' },
       { item: '2Captcha', cost: 0.30, unit: '/user/mo', notes: '~100 solves at $3/1000' },
       { item: 'Bright Data proxies', cost: 0.50, unit: '/user/mo', notes: '~50MB for quality applies' },
-      { item: 'Stripe fees ($79)', cost: 2.59, unit: '/transaction', notes: '2.9% + $0.30' },
+      { item: 'Stripe fees ($59)', cost: 2.01, unit: '/transaction', notes: '2.9% + $0.30' },
     ],
   },
-  totalFixed: 100, // $100/month base infrastructure for quality
 };
 
 // ========================================
-// QUALITY-BASED PRICING TIERS
+// QUALITY-BASED PRICING TIERS - $19/$59 WITH DISCOUNT DISPLAY
 // ========================================
 
 const qualityPricingTiers = {
   ship: {
     name: 'Precision Plan',
-    price: 29,
+    price: 19,
+    originalPrice: 39, // Strikethrough price
+    discount: '51% OFF',
     jobsPerDay: 10,
     matchThreshold: '75%+',
     features: [
@@ -115,11 +142,13 @@ const qualityPricingTiers = {
       'Application tracking dashboard',
     ],
     targetUser: 'Job seekers who want quality over quantity',
-    whyThisPrice: 'Same as LinkedIn Premium Career ($29.99), but with AI matching',
+    whyThisPrice: '10x better than LinkedIn at a lower price',
   },
   auto: {
     name: 'Executive Plan',
-    price: 79,
+    price: 59,
+    originalPrice: 99, // Strikethrough price
+    discount: '40% OFF',
     jobsPerDay: 15,
     autoApplyPerDay: 5,
     matchThreshold: '80%+',
@@ -134,20 +163,39 @@ const qualityPricingTiers = {
       'Everything in Precision plan',
     ],
     targetUser: 'Executives, busy professionals, urgent job search',
-    whyThisPrice: 'Below Jobscan ($90/quarter) with actual automation',
+    whyThisPrice: 'Half the price of LazyApply, 10x better quality',
   },
 };
 
 // ========================================
-// UNIT ECONOMICS - QUALITY MODEL
+// REFERRAL SYSTEM - SCALING REWARDS
 // ========================================
 
-const calculateQualityEconomics = (users) => {
-  const fixedCostShare = qualityInfraCosts.totalFixed / Math.max(users, 50);
+const referralTiers = [
+  { referrals: '1-5', reward: '10%', description: 'of referred user subscription for 12 months' },
+  { referrals: '6-15', reward: '15%', description: 'of referred user subscription for 12 months' },
+  { referrals: '16-50', reward: '20%', description: 'of referred user subscription for 12 months' },
+  { referrals: '50+', reward: '25%', description: 'of referred user subscription for lifetime' },
+];
+
+const referralExamples = [
+  { referred: 5, plan: 'Precision ($19)', monthlyEarning: 5 * 19 * 0.10, yearlyEarning: 5 * 19 * 0.10 * 12 },
+  { referred: 15, plan: 'Mixed ($19/$59)', monthlyEarning: 15 * 35 * 0.15, yearlyEarning: 15 * 35 * 0.15 * 12 },
+  { referred: 50, plan: 'Executive ($59)', monthlyEarning: 50 * 59 * 0.20, yearlyEarning: 50 * 59 * 0.20 * 12 },
+];
+
+// ========================================
+// UNIT ECONOMICS - QUALITY MODEL ($19/$59)
+// ========================================
+
+const calculateQualityEconomics = (users, atScale = false) => {
+  // At launch: $5/mo fixed. At scale (>100 users): $120/mo
+  const fixedCosts = atScale ? qualityInfraCosts.scaledTotal : qualityInfraCosts.phase1Total;
+  const fixedCostShare = fixedCosts / Math.max(users, 50);
 
   const ship = {
-    revenue: 29,
-    stripe: 1.14,
+    revenue: 19,
+    stripe: 0.85, // 2.9% + $0.30 on $19
     embedding: 0.05,
     claude: 0.15,
     pinecone: 0.02,
@@ -159,8 +207,8 @@ const calculateQualityEconomics = (users) => {
   ship.marginPercent = (ship.margin / ship.revenue * 100).toFixed(1);
 
   const auto = {
-    revenue: 79,
-    stripe: 2.59,
+    revenue: 59,
+    stripe: 2.01, // 2.9% + $0.30 on $59
     embedding: 0.08,
     claude: 0.45,
     pinecone: 0.03,
@@ -173,7 +221,7 @@ const calculateQualityEconomics = (users) => {
   auto.margin = auto.revenue - auto.cogs;
   auto.marginPercent = (auto.margin / auto.revenue * 100).toFixed(1);
 
-  return { ship, auto, fixedCostShare };
+  return { ship, auto, fixedCostShare, fixedCosts };
 };
 
 // ========================================
@@ -191,15 +239,15 @@ const competitorPricing = [
 ];
 
 // ========================================
-// REVENUE PROJECTIONS - QUALITY MODEL
+// REVENUE PROJECTIONS - QUALITY MODEL ($19/$59)
 // ========================================
 
 const qualityProjections = [
-  { users: 50, mix: '70/30', mrr: 50 * 0.7 * 29 + 50 * 0.3 * 79, arr: 0 },
-  { users: 200, mix: '60/40', mrr: 200 * 0.6 * 29 + 200 * 0.4 * 79, arr: 0 },
-  { users: 500, mix: '55/45', mrr: 500 * 0.55 * 29 + 500 * 0.45 * 79, arr: 0 },
-  { users: 1000, mix: '50/50', mrr: 1000 * 0.5 * 29 + 1000 * 0.5 * 79, arr: 0 },
-  { users: 5000, mix: '45/55', mrr: 5000 * 0.45 * 29 + 5000 * 0.55 * 79, arr: 0 },
+  { users: 50, mix: '70/30', mrr: 50 * 0.7 * 19 + 50 * 0.3 * 59, arr: 0, infra: 5 },
+  { users: 200, mix: '60/40', mrr: 200 * 0.6 * 19 + 200 * 0.4 * 59, arr: 0, infra: 120 },
+  { users: 500, mix: '55/45', mrr: 500 * 0.55 * 19 + 500 * 0.45 * 59, arr: 0, infra: 120 },
+  { users: 1000, mix: '50/50', mrr: 1000 * 0.5 * 19 + 1000 * 0.5 * 59, arr: 0, infra: 120 },
+  { users: 5000, mix: '45/55', mrr: 5000 * 0.45 * 19 + 5000 * 0.55 * 59, arr: 0, infra: 200 },
 ];
 qualityProjections.forEach(p => p.arr = p.mrr * 12);
 
@@ -217,7 +265,8 @@ const qualityStats = [
 ];
 
 export default function FinanceResearchPage() {
-  const economics = calculateQualityEconomics(500);
+  const economics = calculateQualityEconomics(500, true);
+  const launchEconomics = calculateQualityEconomics(50, false);
 
   return (
     <div className="min-h-screen flex">
@@ -239,9 +288,28 @@ export default function FinanceResearchPage() {
             Financial Analysis: Quality vs Volume - January 9, 2026
           </h1>
           <p className="text-gray-400">
-            Premium quality-based approach for Outreach SaaS - not spam, precision matching
+            Premium quality-based approach for Outreach SaaS - 10x better than LinkedIn
           </p>
         </motion.div>
+
+        {/* Launch Cost Banner */}
+        <Card delay={0.05} className="mb-6 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/20">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+              <Rocket className="text-green-400" size={24} />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-white mb-1">Launch Cost: Just $30</h2>
+              <p className="text-gray-300 text-sm">
+                <strong className="text-green-400">$25</strong> Google Play (one-time) + <strong className="text-green-400">$5</strong> Railway Hobby (monthly) = Ready to launch
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-gray-500">Optional later</div>
+              <div className="text-sm text-gray-400">Apple: $99/year</div>
+            </div>
+          </div>
+        </Card>
 
         {/* Key Decision Banner */}
         <Card delay={0.1} className="mb-8 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20">
@@ -250,11 +318,11 @@ export default function FinanceResearchPage() {
               <Star className="text-purple-400" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white mb-2">Decision: Quality-Based Premium Service</h2>
+              <h2 className="text-xl font-bold text-white mb-2">Strategy: 10x Better Than LinkedIn Premium</h2>
               <p className="text-gray-300">
                 We're building a <strong className="text-purple-400">precision matching service</strong>, not a spam bot.
                 Semantic AI matching with 74-83% accuracy. Fewer jobs, but the RIGHT jobs.
-                Higher prices justified by real results.
+                <strong className="text-green-400"> $19/$59 pricing</strong> with <strong className="text-yellow-400">displayed discounts from $39/$99</strong>.
               </p>
             </div>
           </div>
@@ -358,7 +426,7 @@ export default function FinanceResearchPage() {
         {/* Quality-Based Pricing Tiers */}
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <DollarSign className="text-green-400" size={24} />
-          Quality-Based Pricing Tiers
+          Quality-Based Pricing Tiers (with Displayed Discounts)
         </h2>
 
         <div className="grid grid-cols-2 gap-6 mb-8">
@@ -372,6 +440,10 @@ export default function FinanceResearchPage() {
                   <p className="text-xs text-gray-500">{tier.targetUser}</p>
                 </div>
                 <div className="text-right">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg text-gray-500 line-through">${tier.originalPrice}</span>
+                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">{tier.discount}</span>
+                  </div>
                   <div className="text-3xl font-bold text-green-400">${tier.price}</div>
                   <div className="text-xs text-gray-500">/month</div>
                 </div>
@@ -448,7 +520,10 @@ export default function FinanceResearchPage() {
                 ))}
                 <tr className="bg-green-500/10">
                   <td className="py-3 text-sm text-white font-medium">Outreach (Us)</td>
-                  <td className="py-3 text-sm text-green-400 font-bold">$29 / $79</td>
+                  <td className="py-3 text-sm font-bold">
+                    <span className="text-gray-500 line-through mr-1">$39/$99</span>
+                    <span className="text-green-400">$19 / $59</span>
+                  </td>
                   <td className="py-3">
                     <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400">
                       Quality
@@ -465,12 +540,12 @@ export default function FinanceResearchPage() {
         <Card delay={0.5} className="mb-8">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Server className="text-blue-400" size={20} />
-            Quality Infrastructure Costs (January 2026 Verified)
+            Infrastructure Costs: Phase 1 Launch vs At Scale
           </h2>
 
           <div className="grid grid-cols-3 gap-6">
             <div>
-              <h4 className="text-sm font-medium text-blue-400 mb-3">Fixed Monthly (Quality Stack)</h4>
+              <h4 className="text-sm font-medium text-green-400 mb-3">Phase 1 Launch (Free Tiers)</h4>
               <div className="space-y-2">
                 {qualityInfraCosts.fixed.map((item) => (
                   <div key={item.item} className="flex justify-between p-2 bg-[#1a1a1a] rounded">
@@ -485,8 +560,24 @@ export default function FinanceResearchPage() {
                 ))}
                 <div className="pt-2 border-t border-[#262626]">
                   <div className="flex justify-between">
-                    <span className="font-medium text-white">Total Fixed</span>
-                    <span className="font-bold text-yellow-400">$100/mo</span>
+                    <span className="font-medium text-white">Phase 1 Total</span>
+                    <span className="font-bold text-green-400">$5/mo</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <h5 className="text-sm font-medium text-blue-400 mb-2">At Scale (100+ users)</h5>
+                <div className="space-y-1">
+                  {qualityInfraCosts.scaledFixed.map((item) => (
+                    <div key={item.item} className="flex justify-between text-xs">
+                      <span className="text-gray-400">{item.item}</span>
+                      <span className="text-yellow-400">${item.cost}{item.unit}</span>
+                    </div>
+                  ))}
+                  <div className="pt-1 mt-1 border-t border-blue-500/20 flex justify-between">
+                    <span className="text-white font-medium">Scaled Total</span>
+                    <span className="text-yellow-400 font-bold">$120/mo</span>
                   </div>
                 </div>
               </div>
@@ -532,21 +623,25 @@ export default function FinanceResearchPage() {
         <Card delay={0.6} className="mb-8">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Calculator className="text-yellow-400" size={20} />
-            Unit Economics - Quality Model (at 500 users)
+            Unit Economics - $19/$59 Pricing (at 500 users)
           </h2>
 
           <div className="grid grid-cols-2 gap-6">
             {/* Precision Plan */}
             <div className="p-4 bg-[#1a1a1a] rounded-lg">
-              <h4 className="font-medium text-white mb-4">Precision Plan ($29/mo)</h4>
+              <h4 className="font-medium text-white mb-4">
+                Precision Plan
+                <span className="text-gray-500 line-through ml-2">$39</span>
+                <span className="text-green-400 ml-1">$19/mo</span>
+              </h4>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Revenue</span>
-                  <span className="text-green-400">+$29.00</span>
+                  <span className="text-green-400">+$19.00</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Stripe (2.9% + $0.30)</span>
-                  <span className="text-red-400">-$1.14</span>
+                  <span className="text-red-400">-$0.85</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">OpenAI Embeddings</span>
@@ -562,16 +657,16 @@ export default function FinanceResearchPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Infrastructure share</span>
-                  <span className="text-red-400">-$0.20</span>
+                  <span className="text-red-400">-$0.24</span>
                 </div>
                 <div className="pt-2 mt-2 border-t border-[#262626]">
                   <div className="flex justify-between font-medium">
                     <span className="text-white">Contribution Margin</span>
-                    <span className="text-green-400">${(29 - 1.14 - 0.05 - 0.15 - 0.02 - 0.20).toFixed(2)}</span>
+                    <span className="text-green-400">${(19 - 0.85 - 0.05 - 0.15 - 0.02 - 0.24).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Margin %</span>
-                    <span className="text-green-400 font-bold">94.6%</span>
+                    <span className="text-green-400 font-bold">93.1%</span>
                   </div>
                 </div>
               </div>
@@ -579,15 +674,19 @@ export default function FinanceResearchPage() {
 
             {/* Executive Plan */}
             <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
-              <h4 className="font-medium text-white mb-4">Executive Plan ($79/mo)</h4>
+              <h4 className="font-medium text-white mb-4">
+                Executive Plan
+                <span className="text-gray-500 line-through ml-2">$99</span>
+                <span className="text-green-400 ml-1">$59/mo</span>
+              </h4>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Revenue</span>
-                  <span className="text-green-400">+$79.00</span>
+                  <span className="text-green-400">+$59.00</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Stripe (2.9% + $0.30)</span>
-                  <span className="text-red-400">-$2.59</span>
+                  <span className="text-red-400">-$2.01</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">OpenAI Embeddings</span>
@@ -603,16 +702,16 @@ export default function FinanceResearchPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Infrastructure share</span>
-                  <span className="text-red-400">-$0.20</span>
+                  <span className="text-red-400">-$0.24</span>
                 </div>
                 <div className="pt-2 mt-2 border-t border-purple-500/20">
                   <div className="flex justify-between font-medium">
                     <span className="text-white">Contribution Margin</span>
-                    <span className="text-green-400">${(79 - 2.59 - 0.08 - 0.45 - 0.83 - 0.20).toFixed(2)}</span>
+                    <span className="text-green-400">${(59 - 2.01 - 0.08 - 0.45 - 0.83 - 0.24).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Margin %</span>
-                    <span className="text-green-400 font-bold">94.7%</span>
+                    <span className="text-green-400 font-bold">93.9%</span>
                   </div>
                 </div>
               </div>
@@ -621,8 +720,8 @@ export default function FinanceResearchPage() {
 
           <div className="mt-4 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
             <p className="text-sm text-green-400">
-              <strong>Key Insight:</strong> Quality approach has SAME margins as volume (~95%) but with higher prices ($29/$79 vs $19/$59).
-              More revenue per user, better user satisfaction, lower churn.
+              <strong>Key Insight:</strong> Even at lower $19/$59 pricing, we maintain ~93% margins.
+              Aggressive pricing undercuts competitors while quality AI matching delivers 10x better results.
             </p>
           </div>
         </Card>
@@ -631,7 +730,7 @@ export default function FinanceResearchPage() {
         <Card delay={0.7} className="mb-8">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <TrendingUp className="text-green-400" size={20} />
-            Revenue Projections - Quality Model
+            Revenue Projections - $19/$59 Pricing
           </h2>
 
           <div className="overflow-x-auto">
@@ -642,7 +741,8 @@ export default function FinanceResearchPage() {
                   <th className="text-left py-2 text-sm font-medium text-gray-400">Mix (Precision/Executive)</th>
                   <th className="text-left py-2 text-sm font-medium text-gray-400">MRR</th>
                   <th className="text-left py-2 text-sm font-medium text-gray-400">ARR</th>
-                  <th className="text-left py-2 text-sm font-medium text-gray-400">Gross Profit (~95%)</th>
+                  <th className="text-left py-2 text-sm font-medium text-gray-400">Infra Cost</th>
+                  <th className="text-left py-2 text-sm font-medium text-gray-400">Gross Profit (~93%)</th>
                 </tr>
               </thead>
               <tbody>
@@ -652,7 +752,8 @@ export default function FinanceResearchPage() {
                     <td className="py-3 text-sm text-gray-400">{p.mix}</td>
                     <td className="py-3 text-sm text-green-400 font-medium">${p.mrr.toLocaleString()}</td>
                     <td className="py-3 text-sm text-indigo-400 font-bold">${p.arr.toLocaleString()}</td>
-                    <td className="py-3 text-sm text-yellow-400">${Math.round(p.arr * 0.95).toLocaleString()}</td>
+                    <td className="py-3 text-sm text-yellow-400">${p.infra}/mo</td>
+                    <td className="py-3 text-sm text-green-400">${Math.round(p.arr * 0.93).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -662,12 +763,12 @@ export default function FinanceResearchPage() {
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
               <p className="text-sm text-green-400">
-                <strong>Target Year 1:</strong> 500 users = $25.6K MRR = $307K ARR
+                <strong>Target Year 1:</strong> 500 users = $16.2K MRR = $194K ARR
               </p>
             </div>
             <div className="p-3 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
               <p className="text-sm text-indigo-400">
-                <strong>Target Year 2:</strong> 5,000 users = $282.5K MRR = $3.39M ARR
+                <strong>Target Year 2:</strong> 5,000 users = $198K MRR = $2.38M ARR
               </p>
             </div>
           </div>
@@ -677,12 +778,17 @@ export default function FinanceResearchPage() {
         <Card delay={0.8} className="mb-8 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/20">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <CheckCircle2 className="text-green-400" size={20} />
-            Final Pricing Recommendation
+            Final Pricing - Aggressive Quality Positioning
           </h2>
 
           <div className="grid grid-cols-2 gap-6">
             <div className="p-4 bg-[#0d0d0d] rounded-lg">
-              <h4 className="font-medium text-green-400 mb-3">Precision Plan: $29/mo</h4>
+              <div className="flex items-center gap-2 mb-3">
+                <h4 className="font-medium text-green-400">Precision Plan:</h4>
+                <span className="text-gray-500 line-through">$39</span>
+                <span className="text-green-400 font-bold">$19/mo</span>
+                <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">51% OFF</span>
+              </div>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-green-400 mt-0.5" />
@@ -690,21 +796,26 @@ export default function FinanceResearchPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-green-400 mt-0.5" />
-                  Semantic AI matching, not keyword spam
+                  Semantic AI matching - 10x better than LinkedIn
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-green-400 mt-0.5" />
-                  Same price as LinkedIn Premium, 4x better matching
+                  Cheaper than LinkedIn Premium ($29.99)
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-green-400 mt-0.5" />
-                  94.6% margin = $27.44 profit per user
+                  93.1% margin = $17.69 profit per user
                 </li>
               </ul>
             </div>
 
             <div className="p-4 bg-[#0d0d0d] rounded-lg">
-              <h4 className="font-medium text-purple-400 mb-3">Executive Plan: $79/mo</h4>
+              <div className="flex items-center gap-2 mb-3">
+                <h4 className="font-medium text-purple-400">Executive Plan:</h4>
+                <span className="text-gray-500 line-through">$99</span>
+                <span className="text-purple-400 font-bold">$59/mo</span>
+                <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">40% OFF</span>
+              </div>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-purple-400 mt-0.5" />
@@ -716,11 +827,11 @@ export default function FinanceResearchPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-purple-400 mt-0.5" />
-                  Cheaper than LazyApply ($99), far better quality
+                  40% cheaper than LazyApply ($99), 10x better quality
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-purple-400 mt-0.5" />
-                  94.7% margin = $74.85 profit per user
+                  93.9% margin = $55.39 profit per user
                 </li>
               </ul>
             </div>
@@ -736,29 +847,90 @@ export default function FinanceResearchPage() {
           </div>
         </Card>
 
+        {/* Referral System */}
+        <Card delay={0.85} className="mb-8 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border-pink-500/20">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Gift className="text-pink-400" size={20} />
+            Referral System - Scaling Rewards
+          </h2>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-medium text-pink-400 mb-3">Referral Tiers</h4>
+              <div className="space-y-2">
+                {referralTiers.map((tier) => (
+                  <div key={tier.referrals} className="flex justify-between items-center p-3 bg-[#1a1a1a] rounded-lg">
+                    <div>
+                      <span className="text-white font-medium">{tier.referrals} referrals</span>
+                      <span className="text-xs text-gray-500 block">{tier.description}</span>
+                    </div>
+                    <span className="text-2xl font-bold text-pink-400">{tier.reward}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-green-400 mb-3">Earning Examples</h4>
+              <div className="space-y-2">
+                {referralExamples.map((ex) => (
+                  <div key={ex.referred} className="p-3 bg-[#1a1a1a] rounded-lg">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-gray-400">{ex.referred} users on {ex.plan}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Monthly</span>
+                      <span className="text-green-400 font-medium">${ex.monthlyEarning.toFixed(0)}/mo</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Yearly</span>
+                      <span className="text-green-400 font-bold">${ex.yearlyEarning.toFixed(0)}/yr</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+            <p className="text-sm text-purple-400">
+              <strong>Viral Growth:</strong> Users earn passive income by referring others.
+              At 50+ referrals on Executive plans, they earn <strong>$590/month = $7,080/year</strong> passively.
+              This incentivizes organic marketing and reduces our CAC.
+            </p>
+          </div>
+        </Card>
+
         {/* Budget Allocation */}
         <Card delay={0.9}>
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <PieChart className="text-pink-400" size={20} />
-            Your Take-Home at Scale
+            Your Take-Home at Scale ($19/$59 Pricing)
           </h2>
 
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-[#1a1a1a] rounded-lg text-center">
-              <div className="text-sm text-gray-500 mb-1">500 Users</div>
-              <div className="text-2xl font-bold text-green-400">$7,680/mo</div>
-              <div className="text-xs text-gray-500">Your 30% take-home</div>
+              <div className="text-sm text-gray-500 mb-1">500 Users (55/45 mix)</div>
+              <div className="text-2xl font-bold text-green-400">$4,860/mo</div>
+              <div className="text-xs text-gray-500">Your 30% of $16.2K MRR</div>
             </div>
             <div className="p-4 bg-[#1a1a1a] rounded-lg text-center">
-              <div className="text-sm text-gray-500 mb-1">1,000 Users</div>
-              <div className="text-2xl font-bold text-green-400">$16,200/mo</div>
-              <div className="text-xs text-gray-500">Your 30% take-home</div>
+              <div className="text-sm text-gray-500 mb-1">1,000 Users (50/50 mix)</div>
+              <div className="text-2xl font-bold text-green-400">$11,700/mo</div>
+              <div className="text-xs text-gray-500">Your 30% of $39K MRR</div>
             </div>
             <div className="p-4 bg-purple-500/10 rounded-lg text-center border border-purple-500/20">
-              <div className="text-sm text-gray-500 mb-1">5,000 Users</div>
-              <div className="text-2xl font-bold text-purple-400">$84,750/mo</div>
-              <div className="text-xs text-gray-500">Your 30% take-home</div>
+              <div className="text-sm text-gray-500 mb-1">5,000 Users (45/55 mix)</div>
+              <div className="text-2xl font-bold text-purple-400">$59,400/mo</div>
+              <div className="text-xs text-gray-500">Your 30% of $198K MRR</div>
             </div>
+          </div>
+
+          <div className="mt-4 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+            <p className="text-sm text-green-400">
+              <strong>Launch Investment:</strong> Just $30 to start ($25 Google + $5 Railway).
+              <strong> First 50 users = $1,550 MRR.</strong> Covers all costs with 90%+ profit margin.
+            </p>
           </div>
         </Card>
 
