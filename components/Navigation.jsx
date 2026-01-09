@@ -13,13 +13,19 @@ import {
   Briefcase,
   TrendingUp,
   Github,
-  ExternalLink
+  ExternalLink,
+  Rocket,
+  Cpu,
+  Database,
+  Mail,
+  Smartphone
 } from 'lucide-react';
 import clsx from 'clsx';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/todo', label: 'TODO & Roadmap', icon: ListTodo },
+  { href: '/vision', label: 'Vision & Roadmap', icon: Rocket },
+  { href: '/todo', label: 'TODO List', icon: ListTodo },
   { href: '/architecture', label: 'Architecture', icon: Box },
   { href: '/costs', label: 'Cost Analysis', icon: DollarSign },
   { href: '/setup', label: 'Setup Guide', icon: CheckSquare },
@@ -29,6 +35,14 @@ const navItems = [
 const projectLinks = [
   { href: '/jobs', label: 'Job Intelligence', icon: Briefcase },
   { href: '/market', label: 'Market Intelligence', icon: TrendingUp },
+];
+
+const researchLinks = [
+  { href: '/research/mobile', label: 'Mobile Apps', icon: Smartphone },
+  { href: '/research/backend', label: 'Backend & Infra', icon: Database },
+  { href: '/research/automation', label: 'Automation', icon: Cpu },
+  { href: '/research/outreach', label: 'Email & Calling', icon: Mail },
+  { href: '/research/jobboards', label: 'Job Boards', icon: Briefcase },
 ];
 
 export default function Navigation() {
@@ -104,6 +118,35 @@ export default function Navigation() {
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
                     isActive
                       ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  )}
+                >
+                  <Icon size={18} />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="px-3 mt-6 mb-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3">
+            Research
+          </p>
+        </div>
+        <ul className="space-y-1 px-3">
+          {researchLinks.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href);
+            const Icon = item.icon;
+
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={clsx(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
+                    isActive
+                      ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
                   )}
                 >
