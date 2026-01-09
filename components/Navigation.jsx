@@ -43,6 +43,7 @@ const researchLinks = [
   { href: '/research/automation', label: 'Automation', icon: Cpu },
   { href: '/research/outreach', label: 'Email & Calling', icon: Mail },
   { href: '/research/jobboards', label: 'Job Boards', icon: Briefcase },
+  { href: '/research/finance', label: 'Finance & Pricing', icon: DollarSign },
 ];
 
 export default function Navigation() {
