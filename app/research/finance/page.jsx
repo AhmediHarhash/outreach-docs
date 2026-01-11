@@ -81,6 +81,48 @@ const startupCosts = {
 };
 
 // ========================================
+// AI STACK - EMBEDDINGS + ANALYSIS (January 2026)
+// ========================================
+
+const aiStack = {
+  embeddings: {
+    primary: {
+      provider: 'Voyage AI',
+      model: 'voyage-3.5',
+      cost: 0.06,
+      unit: '/1M tokens',
+      performance: '+8.26% vs OpenAI (MTEB benchmark)',
+      contextWindow: '32,000 tokens',
+      notes: 'Anthropic recommended partner, best quality/cost ratio',
+    },
+    fallback: {
+      provider: 'OpenAI',
+      model: 'text-embedding-3-large',
+      cost: 0.13,
+      unit: '/1M tokens',
+      performance: 'Baseline (64.6% MTEB)',
+      contextWindow: '8,191 tokens',
+      notes: 'Fallback if Voyage is down, use for dev/testing',
+    },
+  },
+  analysis: {
+    provider: 'Anthropic',
+    model: 'Claude Sonnet 4.5',
+    inputCost: 3,
+    outputCost: 15,
+    unit: '/MTok',
+    use: 'Summaries, match analysis, resume tailoring',
+    notes: 'Best balance of intelligence, speed, cost',
+  },
+  whyThisStack: [
+    'Claude cannot generate embeddings - only text output',
+    'Voyage AI is 8.26% better than OpenAI at half the cost',
+    'Dual embedding providers = redundancy if one fails',
+    'Sonnet handles analysis perfectly, Opus is overkill for summaries',
+  ],
+};
+
+// ========================================
 // QUALITY-BASED INFRASTRUCTURE COSTS (January 2026)
 // ========================================
 
@@ -103,13 +145,15 @@ const qualityInfraCosts = {
   scaledTotal: 120, // $120/month at scale
   perUser: {
     ship: [
-      { item: 'OpenAI text-embedding-3-large', cost: 0.05, unit: '/user/mo', notes: '~400k tokens for resume+job embeddings' },
-      { item: 'Claude Sonnet 4.5 (match analysis)', cost: 0.15, unit: '/user/mo', notes: '~5k tokens/match x 10 matches/day' },
+      { item: 'Voyage AI voyage-3.5 (primary)', cost: 0.02, unit: '/user/mo', notes: '~300k tokens for embeddings' },
+      { item: 'OpenAI embeddings (fallback)', cost: 0, unit: '/user/mo', notes: 'Only if Voyage fails' },
+      { item: 'Claude Sonnet 4.5 (summaries)', cost: 0.15, unit: '/user/mo', notes: '~5k tokens/match x 10 matches/day' },
       { item: 'Pinecone queries', cost: 0.02, unit: '/user/mo', notes: '~1000 queries/month' },
       { item: 'Stripe fees ($19)', cost: 0.85, unit: '/transaction', notes: '2.9% + $0.30' },
     ],
     auto: [
-      { item: 'OpenAI text-embedding-3-large', cost: 0.08, unit: '/user/mo', notes: '~600k tokens (more resume variations)' },
+      { item: 'Voyage AI voyage-3.5 (primary)', cost: 0.03, unit: '/user/mo', notes: '~450k tokens for embeddings' },
+      { item: 'OpenAI embeddings (fallback)', cost: 0, unit: '/user/mo', notes: 'Only if Voyage fails' },
       { item: 'Claude Sonnet 4.5 (deep analysis)', cost: 0.45, unit: '/user/mo', notes: 'Resume tailoring + cover letters' },
       { item: 'Pinecone queries', cost: 0.03, unit: '/user/mo', notes: '~1500 queries/month' },
       { item: '2Captcha', cost: 0.30, unit: '/user/mo', notes: '~100 solves at $3/1000' },
@@ -619,6 +663,119 @@ export default function FinanceResearchPage() {
           </div>
         </Card>
 
+        {/* AI Stack - January 2026 Update */}
+        <Card delay={0.55} className="mb-8 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/20">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Brain className="text-cyan-400" size={20} />
+            AI Stack Decision - January 2026 Update
+          </h2>
+
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {/* Voyage AI - Primary Embeddings */}
+            <div className="p-4 bg-[#0d0d0d] rounded-lg border border-cyan-500/30">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                  <Zap className="text-cyan-400" size={16} />
+                </div>
+                <div>
+                  <h4 className="font-medium text-cyan-400">Voyage AI</h4>
+                  <span className="text-xs text-green-400">PRIMARY</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Model</span>
+                  <span className="text-white font-medium">{aiStack.embeddings.primary.model}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Cost</span>
+                  <span className="text-green-400 font-bold">${aiStack.embeddings.primary.cost}{aiStack.embeddings.primary.unit}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Context</span>
+                  <span className="text-cyan-400">{aiStack.embeddings.primary.contextWindow}</span>
+                </div>
+                <div className="pt-2 border-t border-[#262626]">
+                  <span className="text-xs text-green-400 font-medium">{aiStack.embeddings.primary.performance}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* OpenAI - Fallback Embeddings */}
+            <div className="p-4 bg-[#0d0d0d] rounded-lg border border-gray-600/30">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center">
+                  <Shield className="text-gray-400" size={16} />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-400">OpenAI</h4>
+                  <span className="text-xs text-yellow-400">FALLBACK</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Model</span>
+                  <span className="text-white font-medium">{aiStack.embeddings.fallback.model}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Cost</span>
+                  <span className="text-yellow-400">${aiStack.embeddings.fallback.cost}{aiStack.embeddings.fallback.unit}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Context</span>
+                  <span className="text-gray-400">{aiStack.embeddings.fallback.contextWindow}</span>
+                </div>
+                <div className="pt-2 border-t border-[#262626]">
+                  <span className="text-xs text-gray-500">{aiStack.embeddings.fallback.notes}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Claude Sonnet - Analysis */}
+            <div className="p-4 bg-[#0d0d0d] rounded-lg border border-purple-500/30">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                  <Sparkles className="text-purple-400" size={16} />
+                </div>
+                <div>
+                  <h4 className="font-medium text-purple-400">Claude Sonnet 4.5</h4>
+                  <span className="text-xs text-purple-300">ANALYSIS</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Input</span>
+                  <span className="text-white">${aiStack.analysis.inputCost}/MTok</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Output</span>
+                  <span className="text-white">${aiStack.analysis.outputCost}/MTok</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Use</span>
+                  <span className="text-purple-400 text-xs">{aiStack.analysis.use}</span>
+                </div>
+                <div className="pt-2 border-t border-[#262626]">
+                  <span className="text-xs text-purple-300">{aiStack.analysis.notes}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Why This Stack */}
+          <div className="p-3 bg-[#1a1a1a] rounded-lg">
+            <h4 className="text-sm font-medium text-white mb-2">Why This Stack?</h4>
+            <ul className="grid grid-cols-2 gap-2">
+              {aiStack.whyThisStack.map((reason, i) => (
+                <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
+                  <CheckCircle2 size={12} className="text-cyan-400 mt-0.5 flex-shrink-0" />
+                  {reason}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Card>
+
         {/* Unit Economics */}
         <Card delay={0.6} className="mb-8">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -644,8 +801,8 @@ export default function FinanceResearchPage() {
                   <span className="text-red-400">-$0.85</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">OpenAI Embeddings</span>
-                  <span className="text-red-400">-$0.05</span>
+                  <span className="text-gray-400">Voyage AI voyage-3.5</span>
+                  <span className="text-red-400">-$0.02</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Claude Sonnet 4.5</span>
@@ -662,11 +819,11 @@ export default function FinanceResearchPage() {
                 <div className="pt-2 mt-2 border-t border-[#262626]">
                   <div className="flex justify-between font-medium">
                     <span className="text-white">Contribution Margin</span>
-                    <span className="text-green-400">${(19 - 0.85 - 0.05 - 0.15 - 0.02 - 0.24).toFixed(2)}</span>
+                    <span className="text-green-400">${(19 - 0.85 - 0.02 - 0.15 - 0.02 - 0.24).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Margin %</span>
-                    <span className="text-green-400 font-bold">93.1%</span>
+                    <span className="text-green-400 font-bold">93.3%</span>
                   </div>
                 </div>
               </div>
@@ -689,8 +846,8 @@ export default function FinanceResearchPage() {
                   <span className="text-red-400">-$2.01</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">OpenAI Embeddings</span>
-                  <span className="text-red-400">-$0.08</span>
+                  <span className="text-gray-400">Voyage AI voyage-3.5</span>
+                  <span className="text-red-400">-$0.03</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Claude Sonnet 4.5</span>
@@ -707,11 +864,11 @@ export default function FinanceResearchPage() {
                 <div className="pt-2 mt-2 border-t border-purple-500/20">
                   <div className="flex justify-between font-medium">
                     <span className="text-white">Contribution Margin</span>
-                    <span className="text-green-400">${(59 - 2.01 - 0.08 - 0.45 - 0.83 - 0.24).toFixed(2)}</span>
+                    <span className="text-green-400">${(59 - 2.01 - 0.03 - 0.45 - 0.83 - 0.24).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Margin %</span>
-                    <span className="text-green-400 font-bold">93.9%</span>
+                    <span className="text-green-400 font-bold">94.1%</span>
                   </div>
                 </div>
               </div>
@@ -804,7 +961,7 @@ export default function FinanceResearchPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-green-400 mt-0.5" />
-                  93.1% margin = $17.69 profit per user
+                  93.3% margin = $17.72 profit per user
                 </li>
               </ul>
             </div>
@@ -831,7 +988,7 @@ export default function FinanceResearchPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={14} className="text-purple-400 mt-0.5" />
-                  93.9% margin = $55.39 profit per user
+                  94.1% margin = $55.44 profit per user
                 </li>
               </ul>
             </div>
@@ -943,7 +1100,7 @@ export default function FinanceResearchPage() {
         >
           <p className="mb-2">Research conducted: January 9, 2026</p>
           <p className="text-xs">
-            Sources: OpenAI Pricing, Anthropic Claude Pricing, Pinecone, Railway, Stripe,
+            Sources: Voyage AI (MTEB Benchmark Jan 2026), OpenAI Pricing, Anthropic Claude Pricing, Pinecone, Railway, Stripe,
             ScienceDirect AI Matching Study, OECD AI Report, Huntr, LifeShack, CareerPlug 2025
           </p>
         </motion.div>

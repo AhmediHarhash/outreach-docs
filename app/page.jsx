@@ -1,271 +1,200 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import {
-  Briefcase,
-  TrendingUp,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  ArrowRight,
-  Zap,
-  Database,
-  Bell,
-  Calendar
-} from 'lucide-react';
-import Navigation from '../components/Navigation';
-import Card from '../components/Card';
-
-// Project status data
-const projectStatus = {
-  overall: 15, // percentage complete
-  phase: 'Setup & Configuration',
-  blockers: ['Your profile not configured', 'Database not connected'],
-};
-
-const stats = [
-  { label: 'Job Sources', value: '6', icon: Briefcase, color: 'text-blue-400' },
-  { label: 'AI Models Tracked', value: '17', icon: TrendingUp, color: 'text-purple-400' },
-  { label: 'Tasks Done', value: '3/20', icon: CheckCircle2, color: 'text-green-400' },
-  { label: 'Est. Monthly Cost', value: '$0', icon: Clock, color: 'text-yellow-400' },
-];
-
-const todoHighlights = [
-  { task: 'Fill out your profile (CV, skills, preferences)', status: 'blocked', priority: 'high' },
-  { task: 'Set up Supabase free database', status: 'pending', priority: 'high' },
-  { task: 'Configure Discord webhook', status: 'pending', priority: 'medium' },
-  { task: 'Run first test scrape', status: 'pending', priority: 'medium' },
-  { task: 'Set up Windows Task Scheduler', status: 'pending', priority: 'low' },
-];
+import Link from 'next/link';
+import { ArrowRight, Sparkles, Target, Zap, Shield } from 'lucide-react';
 
 const features = [
   {
-    title: 'Job Intelligence',
-    description: 'Scrapes 6 job boards every 4 hours, scores matches against your profile',
-    icon: Briefcase,
-    status: 'Ready (needs config)',
+    icon: Sparkles,
+    title: 'AI-Powered Matching',
+    description: 'Our AI analyzes your skills and experience to find jobs that actually match what you\'re looking for.',
   },
   {
-    title: 'Market Intelligence',
-    description: 'Tracks AI model sentiment across Reddit, HN, YouTube, GitHub',
-    icon: TrendingUp,
-    status: 'Ready (needs config)',
+    icon: Target,
+    title: 'Quality Over Quantity',
+    description: 'Stop applying to hundreds of jobs. We surface the top opportunities that fit your profile.',
   },
   {
-    title: 'Discord Notifications',
-    description: 'Real-time alerts for high-match jobs (70+ score)',
-    icon: Bell,
-    status: 'Needs webhook',
+    icon: Zap,
+    title: 'Smart Applications',
+    description: 'Auto-fill forms, generate tailored cover letters, and track all your applications in one place.',
   },
   {
-    title: 'Daily Reports',
-    description: 'Morning summary of top jobs and AI model rankings',
-    icon: Calendar,
-    status: 'Needs webhook',
+    icon: Shield,
+    title: 'Privacy First',
+    description: 'Your data stays yours. We never share your information with third parties without consent.',
   },
 ];
 
-export default function Dashboard() {
+const stats = [
+  { value: '94%', label: 'Average Match Accuracy' },
+  { value: '3x', label: 'Faster Job Search' },
+  { value: '10K+', label: 'Jobs Analyzed Daily' },
+];
+
+export default function LandingPage() {
   return (
-    <div className="min-h-screen flex">
-      <Navigation />
+    <div className="min-h-screen bg-ocean-900">
+      {/* Navigation */}
+      <nav className="border-b border-ocean-600">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold text-accent-500">JobHunter</span>
+            <span className="text-xl font-light text-text-primary">Pro</span>
+          </Link>
 
-      <main className="flex-1 ml-64 p-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-            <span>Outreach</span>
-            <span>/</span>
-            <span className="text-white">Dashboard</span>
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="text-text-secondary hover:text-text-primary transition-colors">
+              Sign In
+            </Link>
+            <Link href="/signup" className="btn-primary">
+              Get Started Free
+            </Link>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Project Dashboard
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="pt-20 pb-32 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-500/10 border border-accent-500/30 mb-8">
+            <Sparkles className="w-4 h-4 text-accent-400" />
+            <span className="text-sm text-accent-400">AI-Powered Job Matching</span>
+          </div>
+
+          <h1 className="text-5xl md:text-6xl font-bold text-text-primary mb-6 leading-tight">
+            Find Your{' '}
+            <span className="gradient-text">Dream Job</span>
+            <br />
+            Without the Grind
           </h1>
-          <p className="text-gray-400">
-            v0.0.1 - Job Intelligence & Market Intelligence System
-          </p>
-        </motion.div>
 
-        {/* Alert Banner */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-xl p-4 mb-8 flex items-center gap-4"
-        >
-          <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
-            <AlertCircle className="text-amber-400" size={20} />
+          <p className="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">
+            Stop mass-applying to jobs that don't fit. Our AI analyzes your profile and finds
+            opportunities where you'll actually succeed. Quality over quantity.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/signup" className="btn-primary text-lg px-8 py-3">
+              Start Free Trial
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link href="#features" className="btn-secondary text-lg px-8 py-3">
+              See How It Works
+            </Link>
           </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-amber-400">Action Required</h3>
-            <p className="text-sm text-gray-400">
-              Your profile is not configured. The scraper will find irrelevant jobs until you set it up.
+
+          {/* Stats */}
+          <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <p className="text-3xl font-bold text-accent-400">{stat.value}</p>
+                <p className="text-sm text-text-muted mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 px-6 bg-ocean-800/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-text-primary mb-4">
+              Job Hunting, Reimagined
+            </h2>
+            <p className="text-text-secondary max-w-xl mx-auto">
+              We combine AI with human insight to make your job search smarter, faster, and more effective.
             </p>
           </div>
-          <a
-            href="/profile"
-            className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
-          >
-            Configure Profile
-            <ArrowRight size={16} />
-          </a>
-        </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={stat.label} delay={index * 0.1}>
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center ${stat.color}`}>
-                  <stat.icon size={24} />
+          <div className="grid md:grid-cols-2 gap-6">
+            {features.map((feature) => (
+              <div key={feature.title} className="glass-card p-8">
+                <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-accent-400" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                </div>
+                <h3 className="text-xl font-semibold text-text-primary mb-2">{feature.title}</h3>
+                <p className="text-text-secondary">{feature.description}</p>
               </div>
-            </Card>
-          ))}
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Progress Section */}
-          <div className="col-span-2">
-            <Card delay={0.4}>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Zap className="text-indigo-400" size={20} />
-                Project Progress
-              </h2>
-
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Overall Completion</span>
-                  <span className="text-sm font-semibold text-indigo-400">{projectStatus.overall}%</span>
-                </div>
-                <div className="h-3 bg-[#262626] rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${projectStatus.overall}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
-                  />
-                </div>
-              </div>
-
-              {/* Phase */}
-              <div className="p-4 bg-[#1a1a1a] rounded-lg mb-4">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Current Phase</p>
-                <p className="text-white font-medium">{projectStatus.phase}</p>
-              </div>
-
-              {/* Blockers */}
-              {projectStatus.blockers.length > 0 && (
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Blockers</p>
-                  <ul className="space-y-2">
-                    {projectStatus.blockers.map((blocker, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm">
-                        <span className="w-2 h-2 rounded-full bg-red-500" />
-                        <span className="text-red-400">{blocker}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Card>
-
-            {/* Features */}
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <Card key={feature.title} delay={0.5 + index * 0.1} className="relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full -translate-y-16 translate-x-16" />
-                  <feature.icon className="text-indigo-400 mb-3" size={24} />
-                  <h3 className="font-semibold text-white mb-1">{feature.title}</h3>
-                  <p className="text-sm text-gray-400 mb-3">{feature.description}</p>
-                  <span className="text-xs px-2 py-1 rounded bg-white/5 text-gray-500">
-                    {feature.status}
-                  </span>
-                </Card>
-              ))}
-            </div>
+      {/* How It Works */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-text-primary mb-4">
+              Three Steps to Your Next Role
+            </h2>
           </div>
 
-          {/* TODO Highlights */}
-          <Card delay={0.6} className="h-fit">
-            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <CheckCircle2 className="text-green-400" size={20} />
-              Next Steps
-            </h2>
-
-            <ul className="space-y-3">
-              {todoHighlights.map((item, index) => (
-                <li
-                  key={index}
-                  className="flex items-start gap-3 p-3 rounded-lg bg-[#1a1a1a] border border-[#262626]"
-                >
-                  <span
-                    className={`w-2 h-2 rounded-full mt-1.5 ${
-                      item.status === 'blocked'
-                        ? 'bg-red-500'
-                        : item.priority === 'high'
-                        ? 'bg-yellow-500'
-                        : 'bg-gray-500'
-                    }`}
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-300">{item.task}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded ${
-                          item.status === 'blocked'
-                            ? 'bg-red-500/20 text-red-400'
-                            : 'bg-gray-500/20 text-gray-400'
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded ${
-                          item.priority === 'high'
-                            ? 'bg-yellow-500/20 text-yellow-400'
-                            : item.priority === 'medium'
-                            ? 'bg-blue-500/20 text-blue-400'
-                            : 'bg-gray-500/20 text-gray-400'
-                        }`}
-                      >
-                        {item.priority}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="/todo"
-              className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded-lg font-medium text-sm transition-colors"
-            >
-              View Full Roadmap
-              <ArrowRight size={16} />
-            </a>
-          </Card>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: '01',
+                title: 'Build Your Profile',
+                description: 'Upload your CV or chat with our AI to create a comprehensive profile of your skills and goals.',
+              },
+              {
+                step: '02',
+                title: 'Get Matched',
+                description: 'Our AI scans thousands of jobs daily and ranks them by how well they match your profile.',
+              },
+              {
+                step: '03',
+                title: 'Apply Smart',
+                description: 'Use our tools to create tailored applications and track your progress through the pipeline.',
+              },
+            ].map((item) => (
+              <div key={item.step} className="relative">
+                <span className="text-6xl font-bold text-ocean-700 absolute -top-4 -left-2">{item.step}</span>
+                <div className="relative pt-8">
+                  <h3 className="text-xl font-semibold text-text-primary mb-2">{item.title}</h3>
+                  <p className="text-text-secondary">{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-8 pt-8 border-t border-[#262626] text-center text-sm text-gray-500"
-        >
-          <p>Outreach v0.0.1 - Run locally, save money, get jobs</p>
-        </motion.div>
-      </main>
+      {/* CTA Section */}
+      <section className="py-20 px-6 bg-ocean-800/50">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-text-primary mb-4">
+            Ready to Find Your Perfect Job?
+          </h2>
+          <p className="text-text-secondary mb-8">
+            Join thousands of job seekers who've found better opportunities with less effort.
+          </p>
+          <Link href="/signup" className="btn-primary text-lg px-8 py-3 inline-flex">
+            Start Your Free Trial
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+          <p className="text-text-muted text-sm mt-4">No credit card required • Cancel anytime</p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t border-ocean-600">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-accent-500">JobHunter</span>
+            <span className="text-xl font-light text-text-primary">Pro</span>
+          </div>
+
+          <div className="flex gap-6 text-sm text-text-muted">
+            <Link href="/privacy" className="hover:text-text-primary transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-text-primary transition-colors">Terms</Link>
+            <Link href="/contact" className="hover:text-text-primary transition-colors">Contact</Link>
+          </div>
+
+          <p className="text-sm text-text-muted">
+            © 2026 JobHunter Pro. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
