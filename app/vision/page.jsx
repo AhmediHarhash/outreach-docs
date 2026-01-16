@@ -36,9 +36,9 @@ const phases = [
       'Visa sponsorship detection (H1B, UK, EU Blue Card)',
     ],
     tiers: [
-      { name: 'Free Trial', price: '$0', features: '5 jobs/day for 4 days (20 total)' },
-      { name: 'Ship Plan', price: '$19/mo', features: 'Unlimited jobs, manual apply, guided navigation' },
-      { name: 'Auto Plan', price: '$59/mo', features: 'Full automation, auto-apply, daily summaries' },
+      { name: 'Signal', price: '$0', features: '30 job matches/day, basic features' },
+      { name: 'Precision', price: '$39/mo', features: '150 matches/day, AI cover letters, resume optimization' },
+      { name: 'Executive', price: '$89/mo', features: '300 matches/day, auto-apply, priority support' },
     ],
   },
   {
@@ -278,11 +278,11 @@ export default function VisionPage() {
               <div className="flex-1">
                 <h3 className="font-semibold text-white">Revenue Model</h3>
                 <p className="text-sm text-gray-400">
-                  1000 users × $19/mo = <strong className="text-green-400">$19,000/mo</strong> |
-                  1000 users × $59/mo = <strong className="text-green-400">$59,000/mo</strong>
+                  1000 users × $39/mo = <strong className="text-green-400">$39,000/mo</strong> |
+                  1000 users × $89/mo = <strong className="text-green-400">$89,000/mo</strong>
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  Target: 10,000 users in Year 1 → $190K-$590K ARR
+                  Target: 10,000 users in Year 1 → $390K-$890K ARR
                 </p>
               </div>
             </div>
